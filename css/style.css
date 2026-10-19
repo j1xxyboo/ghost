@@ -1,0 +1,205 @@
+@font-face {
+  font-family: "PS2P";
+  src: url("../assets/fonts/PressStart2P.ttf") format("truetype");
+  font-display: block;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; height: 100%; height: 100dvh; overflow: hidden;
+  background: #000;
+  font-family: "PS2P", monospace;
+  color: #fff;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  touch-action: none; overscroll-behavior: none;
+}
+
+#stage { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+
+#game {
+  display: block; width: 100%; height: 100%;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  background: #000;
+}
+
+#crt {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,.18) 3px),
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,.45) 100%);
+  mix-blend-mode: multiply;
+}
+body.no-crt #crt { display: none; }
+
+/* ---------- touch controls ---------- */
+#touch { position: fixed; inset: 0; pointer-events: none; display: none; z-index: 5; }
+body.touch #touch { display: block; }
+
+#topbar {
+  position: absolute; top: max(8px, env(safe-area-inset-top)); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px;
+}
+.tbtn {
+  pointer-events: auto; width: 44px; height: 30px; border-radius: 8px;
+  border: 2px solid rgba(255,255,255,.35); background: rgba(10,10,30,.45);
+  color: #fff; font: 12px "PS2P", monospace; padding: 0;
+}
+.tbtn:active { background: rgba(255,255,255,.3); }
+
+#stick-zone {
+  position: absolute; left: 0; bottom: 0; width: 42%; height: 75%;
+  pointer-events: auto; touch-action: none;
+}
+#stick-base {
+  position: absolute;
+  left: calc(max(22px, env(safe-area-inset-left)) + 8px); bottom: 26px;
+  width: 136px; height: 136px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.10) 0 45%, rgba(255,255,255,.04) 70%);
+  border: 3px solid rgba(255,255,255,.28);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.35) inset;
+}
+#stick-knob {
+  position: absolute; left: 50%; top: 50%; width: 62px; height: 62px; margin: -31px 0 0 -31px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #cfd3e6, #6c7090 60%, #3a3d55);
+  border: 2px solid rgba(0,0,0,.5);
+  box-shadow: 0 4px 10px rgba(0,0,0,.5);
+  opacity: .85;
+}
+.arrow { position: absolute; width: 0; height: 0; border: 7px solid transparent; opacity: .45; }
+.arrow.up    { top: 6px;  left: 50%; margin-left: -7px; border-bottom-color: #fff; }
+.arrow.down  { bottom: 6px; left: 50%; margin-left: -7px; border-top-color: #fff; }
+.arrow.left  { left: 6px; top: 50%; margin-top: -7px; border-right-color: #fff; }
+.arrow.right { right: 6px; top: 50%; margin-top: -7px; border-left-color: #fff; }
+
+#pad {
+  position: absolute; right: calc(max(18px, env(safe-area-inset-right)) + 6px); bottom: 18px;
+  width: 196px; height: 196px; pointer-events: none;
+}
+.pbtn {
+  position: absolute; width: 66px; height: 66px; border-radius: 50%;
+  pointer-events: auto; touch-action: none; padding: 0;
+  background: radial-gradient(circle at 35% 30%, rgba(80,80,110,.75), rgba(20,20,40,.75));
+  border: 3px solid rgba(255,255,255,.3);
+  color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 4px 0 rgba(0,0,0,.45);
+}
+.pbtn.on { transform: translateY(3px) scale(.95); box-shadow: 0 1px 0 rgba(0,0,0,.45); background: rgba(255,255,255,.35); }
+.pbtn .glyph { font: 24px/1 Arial, sans-serif; font-weight: bold; }
+.pbtn .lbl { font: 6px "PS2P", monospace; margin-top: 4px; opacity: .85; }
+.glyph.tri { color: #3fe0a0; } .glyph.sq { color: #ff7ad0; }
+.glyph.ci  { color: #ff4d4d; } .glyph.cr { color: #6fb6ff; }
+#b-jump    { left: 65px; top: 0; }
+#b-punch   { left: 0;    top: 65px; }
+#b-special { left: 130px; top: 65px; }
+#b-kick    { left: 65px; top: 130px; }
+
+@media (max-height: 380px) {
+  #stick-base { width: 116px; height: 116px; bottom: 14px; }
+  #stick-knob { width: 54px; height: 54px; margin: -27px 0 0 -27px; }
+  #pad { transform: scale(.82); transform-origin: bottom right; bottom: 8px; }
+}
+
+/* PSP-style R shoulder: ultimate */
+#b-super {
+  position: absolute; bottom: 222px;
+  right: calc(max(18px, env(safe-area-inset-right)) + 50px);
+  width: 108px; height: 38px; border-radius: 10px 22px 10px 10px;
+  background: linear-gradient(180deg, rgba(90,90,120,.7), rgba(25,25,45,.75));
+}
+#b-super .lbl { font-size: 8px; margin: 0; letter-spacing: 1px; }
+body.super-ready #b-super {
+  border-color: #ffd84a; color: #ffd84a;
+  animation: superglow .5s ease-in-out infinite alternate;
+}
+@keyframes superglow {
+  from { box-shadow: 0 0 6px #ff9a00, 0 4px 0 rgba(0,0,0,.45); }
+  to   { box-shadow: 0 0 22px #ffd84a, 0 0 40px #ff5a00, 0 4px 0 rgba(0,0,0,.45); }
+}
+
+/* ---------- rotate prompt ---------- */
+#rotate {
+  position: fixed; inset: 0; z-index: 20; display: none;
+  background: radial-gradient(circle at 50% 40%, #1d1550, #07060f 70%);
+  flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding: 24px;
+}
+body.portrait #rotate { display: flex; }
+#rotate p { font-size: 14px; margin: 36px 0 12px; color: #ffd84a; text-shadow: 3px 3px 0 #b3261e; line-height: 1.6; }
+#rotate small { font-size: 8px; opacity: .7; line-height: 1.8; }
+.phone {
+  width: 70px; height: 120px; border: 5px solid #fff; border-radius: 12px; position: relative;
+  animation: turn 2.2s ease-in-out infinite;
+}
+.phone .screen { position: absolute; inset: 8px 5px; background: linear-gradient(135deg, #2b6dff, #8a2bff); border-radius: 3px; }
+@keyframes turn {
+  0%, 20% { transform: rotate(0deg); }
+  50%, 80% { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (max-height: 380px) {
+  #b-super { bottom: 176px; right: calc(max(18px, env(safe-area-inset-right)) + 40px); }
+}
+
+/* ---------- online: room code entry ---------- */
+#netui {
+  position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 8;
+  display: none; flex-direction: column; align-items: center; gap: min(14px, 3vh);
+  padding: min(22px, 4vh) min(26px, 5vw); background: rgba(8,6,24,.92); border: 3px solid #ffd84a; border-radius: 6px;
+  box-shadow: 0 0 0 4px #000, 0 10px 40px rgba(0,0,0,.6);
+}
+body.netui #netui { display: flex; }
+#netui label { font-size: min(10px, 2.6vh); color: #ffd84a; letter-spacing: 1px; }
+#room-input {
+  width: min(230px, 60vw); font: min(28px, 7vh) "PS2P", monospace; text-align: center; text-transform: uppercase;
+  letter-spacing: min(8px, 2vh); padding: min(12px, 2.5vh) 6px min(10px, 2vh) 14px; color: #fff; background: #000;
+  border: 3px solid #3d8bff; border-radius: 4px; outline: none;
+}
+#room-input:focus { border-color: #7cb4ff; box-shadow: 0 0 12px #3d8bff; }
+#netui .row { display: flex; gap: 12px; }
+#netui button {
+  font: min(11px, 3vh) "PS2P", monospace; padding: min(12px, 2.6vh) min(18px, 4vw); color: #fff; cursor: pointer;
+  background: #8a1212; border: 3px solid #fff; border-radius: 4px;
+}
+#netui button#room-cancel { background: #222244; }
+#netui button:active { transform: translateY(2px); }
+#room-error { margin: 0; min-height: 10px; font-size: 8px; color: #ff6060; }
+
+/* already running as a home-screen app: fullscreen button is pointless */
+body.standalone #btn-full { display: none; }
+
+/* ---------- iPhone: Add to Home Screen guide ---------- */
+#guide {
+  position: fixed; inset: 0; z-index: 30; display: none;
+  align-items: center; justify-content: center; padding: 10px;
+  background: rgba(4, 3, 14, .82);
+}
+body.guide #guide { display: flex; }
+#guide .card {
+  max-width: 560px; width: 100%; max-height: 100%; overflow: auto;
+  padding: min(18px, 4vh) min(22px, 4vw); text-align: center;
+  background: #0d0a26; border: 3px solid #ffd84a; border-radius: 6px;
+  box-shadow: 0 0 0 4px #000, 0 10px 40px rgba(0,0,0,.7);
+}
+#guide h2 { margin: 0 0 min(10px, 2vh); font-size: min(16px, 4.4vh); color: #ffd84a; text-shadow: 3px 3px 0 #b3261e; }
+#guide .why { margin: 0 0 min(12px, 2.4vh); font-size: min(8px, 2.4vh); line-height: 1.8; color: #c9c6e8; }
+#guide ol { list-style: none; margin: 0 0 min(14px, 2.6vh); padding: 0; text-align: left; }
+#guide li {
+  display: flex; align-items: center; gap: 12px; margin: min(8px, 1.6vh) 0;
+  padding: min(8px, 1.6vh) 10px; background: rgba(255,255,255,.06); border-radius: 4px;
+  font-size: min(9px, 2.7vh); line-height: 1.6;
+}
+#guide li > span:nth-child(2) { flex: 1; }
+#guide b { color: #7cff9a; font-weight: normal; }
+#guide .n {
+  flex: none; width: 24px; height: 24px; line-height: 26px; text-align: center; border-radius: 50%;
+  background: #3d8bff; color: #fff; font-size: 10px;
+}
+#guide svg { flex: none; width: 26px; height: 26px; fill: none; stroke: #3d8bff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#guide li img { flex: none; width: 26px; height: 26px; border-radius: 6px; image-rendering: pixelated; }
+#guide-ok {
+  font: min(11px, 3vh) "PS2P", monospace; padding: min(12px, 2.6vh) 26px; color: #fff; cursor: pointer;
+  background: #8a1212; border: 3px solid #fff; border-radius: 4px;
+}

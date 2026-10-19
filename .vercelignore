@@ -1,0 +1,8 @@
+# source art / generation scratch — not needed by the game (~118 MB)
+assets/raw
+assets/audio_raw
+tools
+.claude
+pixelbot
+docs
+README.md

@@ -1,0 +1,16 @@
+# local tooling / deploy state
+.vercel
+.claude
+node_modules
+
+# original reference photos + raw AI generations (large and personal)
+assets/raw/
+assets/audio_raw/
+photo_*.jpg
+poster/
+
+# unfinished side project
+pixelbot/
+
+# dev-only test page
+tools/dual.html
